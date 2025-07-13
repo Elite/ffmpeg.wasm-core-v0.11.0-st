@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -euxo pipefail
 
 EM_VERSION=${EM_VERSION:-2.0.8}
 
@@ -13,8 +13,9 @@ docker run \
   -e FFMPEG_ST=${FFMPEG_ST:-no} \
   emscripten/emsdk:$EM_VERSION \
   /bin/bash -c "
+    set -euxo pipefail
+    echo '[DEBUG] Docker container started, about to run fix-repositories.sh...'
     cd /src
-    echo 'Running repository fix script...'
     chmod +x ./fix-repositories.sh
     ./fix-repositories.sh
 
