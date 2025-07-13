@@ -14,11 +14,15 @@ docker run \
   emscripten/emsdk:$EM_VERSION \
   /bin/bash -c "
     set -euxo pipefail
-    echo '[DEBUG] Docker container started, about to run fix-repositories.sh...'
+    echo 'Fixing Debian Buster repositories...'
+    echo 'deb http://archive.debian.org/debian buster main contrib non-free' > /etc/apt/sources.list
+    echo 'deb http://archive.debian.org/debian-security buster/updates main contrib non-free' >> /etc/apt/sources.list
+    rm -f /etc/apt/sources.list.d/* 2>/dev/null || true
+    mkdir -p /etc/apt/apt.conf.d/
+    echo 'Acquire::Check-Valid-Until \"false\";' > /etc/apt/apt.conf.d/99no-check-valid-until
+    echo 'Acquire::Check-Date \"false\";' >> /etc/apt/apt.conf.d/99no-check-valid-until
+    rm -rf /var/lib/apt/lists/*
+    apt-get update
     cd /src
-    chmod +x ./fix-repositories.sh
-    ./fix-repositories.sh
-
-    echo 'Now running build script...'
     bash ./build.sh \"\$@\"
   " "$@"
