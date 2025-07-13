@@ -11,31 +11,26 @@ docker run \
   -v $PWD/wasm/cache:/emsdk_portable/.data/cache/wasm \
   -e FFMPEG_ST=${FFMPEG_ST:-no} \
   emscripten/emsdk:$EM_VERSION \
-  bash -c '
-    # Fix Debian Buster repositories (end-of-life) completely
-    echo "Fixing Debian Buster repositories..."
+  bash -c "
+    echo 'Fixing Debian Buster repositories...'
     
     # Replace sources.list completely
-    cat > /etc/apt/sources.list << EOF
-deb http://archive.debian.org/debian buster main contrib non-free
-deb http://archive.debian.org/debian-security buster/updates main contrib non-free
-EOF
+    echo 'deb http://archive.debian.org/debian buster main contrib non-free' > /etc/apt/sources.list
+    echo 'deb http://archive.debian.org/debian-security buster/updates main contrib non-free' >> /etc/apt/sources.list
     
     # Remove any additional source files that might interfere
     rm -f /etc/apt/sources.list.d/* 2>/dev/null || true
     
     # Disable validity checks for archived repositories
-    cat > /etc/apt/apt.conf.d/99no-check-valid-until << EOF
-Acquire::Check-Valid-Until "false";
-Acquire::Check-Date "false";
-EOF
+    echo 'Acquire::Check-Valid-Until \"false\";' > /etc/apt/apt.conf.d/99no-check-valid-until
+    echo 'Acquire::Check-Date \"false\";' >> /etc/apt/apt.conf.d/99no-check-valid-until
     
     # Clean apt cache
     rm -rf /var/lib/apt/lists/*
     
-    echo "Repository fix complete. Testing with apt-get update..."
+    echo 'Repository fix complete. Testing with apt-get update...'
     apt-get update
     
-    # Now run the build script
-    bash ./build.sh "$@"
-  ' -- "$@"
+    echo 'Now running build script...'
+    bash ./build.sh \"\$@\"
+  " "$@"
