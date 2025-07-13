@@ -12,8 +12,8 @@ env:
   DIST_PATH: wasm/packages/core-st/dist
   CACHE_KEY_PREFIX: ffmpeg.wasm-core-st
   EM_VERSION: 2.0.8
-  EM_CACHE_FOLDER: 'emsdk-cache'
-  FFMPEG_COMMIT: 3ea4213
+  EM_CACHE_FOLDER: "emsdk-cache"
+  FFMPEG_COMMIT: v0.11.0
 
 jobs:
   build-libs:
@@ -44,13 +44,14 @@ jobs:
           repository: ffmpegwasm/ffmpeg.wasm-core
           ref: ${{ env.FFMPEG_COMMIT }}
           submodules: recursive
-      
+          fetch-depth: 0
+
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v11
         with:
           version: ${{ env.EM_VERSION }}
-          
-      
+          actions-cache-folder: ${{ env.EM_CACHE_FOLDER }}
+
       - name: Cache libs
         uses: actions/cache@v3
         with:
@@ -60,10 +61,10 @@ jobs:
           key: ${{ env.CACHE_KEY_PREFIX }}-${{ env.FFMPEG_COMMIT }}-${{ matrix.script }}
           restore-keys: |
             ${{ env.CACHE_KEY_PREFIX }}-${{ env.FFMPEG_COMMIT }}-
-      
+
       - name: List cached libs
         run: ls -R build || true
-      
+
       - name: Build FFMpeg Libs
         run: bash build-with-docker.sh install-deps ${{ matrix.script }}
 
@@ -76,13 +77,14 @@ jobs:
           repository: ffmpegwasm/ffmpeg.wasm-core
           ref: ${{ env.FFMPEG_COMMIT }}
           submodules: recursive
-      
+          fetch-depth: 0
+
       - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v13
+        uses: mymindstorm/setup-emsdk@v11
         with:
           version: ${{ env.EM_VERSION }}
           actions-cache-folder: ${{ env.EM_CACHE_FOLDER }}
-      
+
       - name: Cache multiple paths
         uses: actions/cache@v3
         with:
@@ -92,17 +94,17 @@ jobs:
           key: ${{ env.CACHE_KEY_PREFIX }}-${{ env.FFMPEG_COMMIT }}-ffmpeg
           restore-keys: |
             ${{ env.CACHE_KEY_PREFIX }}-${{ env.FFMPEG_COMMIT }}-
-      
+
       - name: List cached libs
         run: ls -R build || true
-      
+
       - name: Build FFMpeg
         run: |
           bash build-with-docker.sh \
             install-deps \
             configure-ffmpeg \
             build-ffmpeg
-      
+
       - uses: actions/upload-artifact@v3
         with:
           name: ffmpeg-core
