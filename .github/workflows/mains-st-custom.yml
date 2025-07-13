@@ -12,7 +12,6 @@ env:
   DIST_PATH: wasm/packages/core-st/dist
   CACHE_KEY_PREFIX: ffmpeg.wasm-core-st
   EM_VERSION: 2.0.8
-  EM_CACHE_FOLDER: "emsdk-cache"
   FFMPEG_COMMIT: v0.11.0
 
 jobs:
@@ -50,7 +49,6 @@ jobs:
         uses: mymindstorm/setup-emsdk@v11
         with:
           version: ${{ env.EM_VERSION }}
-          actions-cache-folder: ${{ env.EM_CACHE_FOLDER }}
 
       - name: Cache libs
         uses: actions/cache@v3
@@ -83,7 +81,6 @@ jobs:
         uses: mymindstorm/setup-emsdk@v11
         with:
           version: ${{ env.EM_VERSION }}
-          actions-cache-folder: ${{ env.EM_CACHE_FOLDER }}
 
       - name: Cache multiple paths
         uses: actions/cache@v3
